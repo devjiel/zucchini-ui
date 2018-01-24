@@ -4,6 +4,7 @@ import { replace } from 'react-router-redux'
 import * as model from './model'
 
 import { getTestRun } from '../testRun/redux';
+import { updateScenarioStateAndComment } from '../scenario/redux';
 
 
 // Actions
@@ -104,6 +105,15 @@ export function deleteFeature({ featureId }) {
     meta: {
       featureId,
     },
+  };
+}
+
+export function updateScenarioStateAndCommentFromFeature(scenarioId, newState, comment) {
+  return async (dispatch, getState) => {
+    await dispatch(updateScenarioStateAndComment(scenarioId, newState, comment));
+
+    const featureId = getState().feature.feature.id;
+    await dispatch(loadFeaturePage({ featureId }));
   };
 }
 
