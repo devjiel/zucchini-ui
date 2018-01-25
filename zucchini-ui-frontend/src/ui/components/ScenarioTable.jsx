@@ -8,7 +8,6 @@ import Popover from 'react-bootstrap/lib/Popover';
 import { Link } from 'react-router'
 import Status from '../../ui/components/Status';
 import UpdateScenarioStateDialog from '../../scenario/components/UpdateScenarioStateDialog';
-import { updateScenarioStateAndCommentFromFeature } from '../../feature/redux';
 
 
 export default class ScenarioTable extends React.PureComponent {
@@ -19,8 +18,8 @@ export default class ScenarioTable extends React.PureComponent {
     this.state = {
       showUpdateStateDialog: false,
     };
-  }
 
+  }
 
   onEditScenario = (activeScenario) => {
     this.setState({
@@ -40,6 +39,15 @@ export default class ScenarioTable extends React.PureComponent {
       showUpdateStateDialog: false,
     });
   }
+
+  onUpdateScenario = ({scenarioId, newState, comment}) => {
+    console.info('onUpdateScenario:', {scenarioId, newState, comment})
+    this.props.onUpdateScenario({
+      scenarioId,
+      newState,
+      comment,
+    });
+  };
 
   render() {
     const { scenarios, selectedScenarioId } = this.props;
@@ -68,7 +76,7 @@ export default class ScenarioTable extends React.PureComponent {
           scenario={activeScenario}
           show={this.state.showUpdateStateDialog}
           onClose={this.hideUpdateStateDialog}
-          onUpdateState={/*TODO*/} /> }
+          onUpdateState={this.onUpdateScenario} /> }
       </div>
     );
   }
@@ -77,6 +85,7 @@ export default class ScenarioTable extends React.PureComponent {
 ScenarioTable.propTypes = {
   scenarios: PropTypes.arrayOf(PropTypes.object),
   selectedScenarioId: PropTypes.string,
+  onUpdateScenario: PropTypes.func.isRequired,
 };
 
 

@@ -108,9 +108,9 @@ export function deleteFeature({ featureId }) {
   };
 }
 
-export function updateScenarioStateAndCommentFromFeature(scenarioId, newState, comment) {
+export function updateScenarioStateAndCommentFromFeature({scenarioId, newState, comment}) {
   return async (dispatch, getState) => {
-    await dispatch(updateScenarioStateAndComment(scenarioId, newState, comment));
+    await dispatch(updateScenarioStateAndComment({ scenarioId, newState, comment }));
 
     const featureId = getState().feature.feature.id;
     await dispatch(loadFeaturePage({ featureId }));

@@ -3,6 +3,7 @@ import { createSelector, createStructuredSelector } from 'reselect';
 
 import { selectScenarioFilterFunc } from '../../filters/selectors';
 import ScenarioTable from '../../ui/components/ScenarioTable';
+import { updateScenarioStateAndCommentFromFeature } from '../../feature/redux';
 
 
 const selectScenarios = createSelector(
@@ -20,4 +21,7 @@ const selectProps = createStructuredSelector({
 
 export default connect(
   selectProps,
+  {
+    onUpdateScenario: updateScenarioStateAndCommentFromFeature,
+  },
 )(ScenarioTable);
