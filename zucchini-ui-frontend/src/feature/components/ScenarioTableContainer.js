@@ -14,8 +14,11 @@ const selectScenarios = createSelector(
   },
 );
 
+const isUpdateScenarioActive = () => true;
+
 const selectProps = createStructuredSelector({
   scenarios: selectScenarios,
+  isUpdateScenarioActive: isUpdateScenarioActive,
 });
 
 

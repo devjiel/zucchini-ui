@@ -12,21 +12,80 @@ import UpdateScenarioStateDialog from '../../scenario/components/UpdateScenarioS
 
 export default class ScenarioTable extends React.PureComponent {
 
+  onUpdateScenario = ({scenarioId, newState, comment}) => {
+    this.props.onUpdateScenario({
+      scenarioId,
+      newState,
+      comment,
+    });
+  };
+
+  render() {
+    const { scenarios, selectedScenarioId, isUpdateScenarioActive } = this.props;
+
+    const rows = scenarios.map(scenario => {
+      const isActive = (scenario.id === selectedScenarioId);
+      return (
+        <ScenarioTableRow key={scenario.id} scenario={scenario} isActive={isActive} isUpdateScenarioActive={isUpdateScenarioActive} onUpdateScenario={this.onUpdateScenario} />
+      )
+    });
+
+    return (
+      <Table bordered striped hover>
+        <thead>
+          <tr>
+            <th className="col-md-10">Scénario</th>
+            <th className="col-md-1">Statut</th>
+            <th className="col-md-1">Analysé</th>
+          </tr>
+        </thead>
+        <tbody>{rows}</tbody>
+      </Table>
+    );
+  }
+}
+
+ScenarioTable.propTypes = {
+  scenarios: PropTypes.arrayOf(PropTypes.object),
+  selectedScenarioId: PropTypes.string,
+  isUpdateScenarioActive: PropTypes.bool,
+  onUpdateScenario: PropTypes.func,
+};
+
+
+class ScenarioTableRow extends React.PureComponent {
+
   constructor(props) {
     super(props);
 
     this.state = {
+      show: false,
       showUpdateStateDialog: false,
     };
-
   }
 
-  onEditScenario = (activeScenario) => {
-    this.setState({
-      activeScenario,
-    })
+  onUpdateScenario = ({scenarioId, newState, comment}) => {
+    this.props.onUpdateScenario({
+      scenarioId,
+      newState,
+      comment,
+    });
+  }
+
+  showPopUp = () => {
+    if (!this.state.showUpdateStateDialog) {
+      this.setState({ show: true });   
+    }
+  }
+
+  hidePopUp = () => {
+    this.setState({ show: false });  
+  }
+
+  onUpdateStateClick = () => {
+    this.hidePopUp();
     this.showUpdateStateDialog();
-  }
+  };
 
   showUpdateStateDialog = () => {
     this.setState({
@@ -40,79 +99,8 @@ export default class ScenarioTable extends React.PureComponent {
     });
   }
 
-  onUpdateScenario = ({scenarioId, newState, comment}) => {
-    console.info('onUpdateScenario:', {scenarioId, newState, comment})
-    this.props.onUpdateScenario({
-      scenarioId,
-      newState,
-      comment,
-    });
-  };
-
   render() {
-    const { scenarios, selectedScenarioId } = this.props;
-    const { activeScenario } = this.state;
-
-    const rows = scenarios.map(scenario => {
-      const isActive = (scenario.id === selectedScenarioId);
-      return (
-        <ScenarioTableRow key={scenario.id} scenario={scenario} isActive={isActive} onEditScenario={this.onEditScenario} />
-      )
-    });
-
-    return (
-      <div>
-        <Table bordered striped hover>
-          <thead>
-            <tr>
-              <th className="col-md-10">Scénario</th>
-              <th className="col-md-1">Statut</th>
-              <th className="col-md-1">Analysé</th>
-            </tr>
-          </thead>
-          <tbody>{rows}</tbody>
-        </Table>
-        {activeScenario && <UpdateScenarioStateDialog
-          scenario={activeScenario}
-          show={this.state.showUpdateStateDialog}
-          onClose={this.hideUpdateStateDialog}
-          onUpdateState={this.onUpdateScenario} /> }
-      </div>
-    );
-  }
-}
-
-ScenarioTable.propTypes = {
-  scenarios: PropTypes.arrayOf(PropTypes.object),
-  selectedScenarioId: PropTypes.string,
-  onUpdateScenario: PropTypes.func.isRequired,
-};
-
-
-class ScenarioTableRow extends React.PureComponent {
-
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      show: false,
-    };
-  }
-
-  showPopUp = () => {
-    this.setState({ show: true });   
-  }
-
-  hidePopUp = () => {
-    this.setState({ show: false });  
-  }
-
-  onUpdateStateClick = () => {
-    this.props.onEditScenario(this.props.scenario);
-  };
-
-  render() {
-    const { scenario, isActive } = this.props;
+    const { scenario, isActive, isUpdateScenarioActive } = this.props;
     const className = isActive ? 'info' : null;
 
     const reviewedProps = {
@@ -133,7 +121,7 @@ class ScenarioTableRow extends React.PureComponent {
         <td>
           <Label bsStyle={reviewedProps.bsStyle}>{reviewedProps.text}</Label>
         </td>
-        <Overlay
+        {isUpdateScenarioActive && <Overlay
           show={this.state.show}
           target={this}
           placement="right">
@@ -142,7 +130,12 @@ class ScenarioTableRow extends React.PureComponent {
               Modifier le statut&hellip;
             </Button>
           </Popover>
-        </Overlay>
+        </Overlay>}
+        <UpdateScenarioStateDialog
+          scenario={scenario}
+          show={this.state.showUpdateStateDialog}
+          onClose={this.hideUpdateStateDialog}
+          onUpdateState={this.onUpdateScenario} />
       </tr>
     );
   }
@@ -152,5 +145,6 @@ class ScenarioTableRow extends React.PureComponent {
 ScenarioTableRow.propTypes = {
   scenario: PropTypes.object.isRequired,
   isActive: PropTypes.bool.isRequired,
-  onEditScenario: PropTypes.func.isRequired,
+  isUpdateScenarioActive: PropTypes.bool,
+  onUpdateScenario: PropTypes.func.isRequired,
 };
