@@ -73,9 +73,7 @@ class ScenarioTableRow extends React.PureComponent {
   }
 
   showPopUp = () => {
-    if (!this.state.showUpdateStateDialog) {
-      this.setState({ show: true });   
-    }
+    this.setState({ show: true });   
   }
 
   hidePopUp = () => {
@@ -109,16 +107,16 @@ class ScenarioTableRow extends React.PureComponent {
     };
 
     return (
-      <tr className={className} onMouseOver={this.showPopUp} onMouseOut={this.hidePopUp}>
-        <td>
+      <tr className={className}>
+        <td onMouseOver={this.showPopUp} onMouseOut={this.hidePopUp}>
           <Link to={{ pathname: `/scenarios/${scenario.id}` }}>
             <b>{scenario.info.keyword}</b> {scenario.info.name}
           </Link>
         </td>
-        <td >
+        <td onMouseOver={this.showPopUp} onMouseOut={this.hidePopUp}>
           <Status status={scenario.status} />
         </td>
-        <td>
+        <td onMouseOver={this.showPopUp} onMouseOut={this.hidePopUp}>
           <Label bsStyle={reviewedProps.bsStyle}>{reviewedProps.text}</Label>
         </td>
         {isUpdateScenarioActive && <Overlay
