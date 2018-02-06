@@ -2,13 +2,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import Table from 'react-bootstrap/lib/Table';
 import Label from 'react-bootstrap/lib/Label';
-import Button from '../../ui/components/Button';
-import Overlay from 'react-bootstrap/lib/Overlay';
-import Popover from 'react-bootstrap/lib/Popover';
 import { Link } from 'react-router'
 import Status from '../../ui/components/Status';
-import UpdateScenarioStateDialog from '../../scenario/components/UpdateScenarioStateDialog';
-
+import UpdateScenarioStatusOverlay from './UpdateScenarioStatusOverlay';
 
 export default class ScenarioTable extends React.PureComponent {
 
@@ -59,8 +55,7 @@ class ScenarioTableRow extends React.PureComponent {
     super(props);
 
     this.state = {
-      show: false,
-      showUpdateStateDialog: false,
+      showUpdateStatusOverlay: false,
     };
   }
 
@@ -70,31 +65,14 @@ class ScenarioTableRow extends React.PureComponent {
       newState,
       comment,
     });
-  }
+  };
 
   showPopUp = () => {
-    this.setState({ show: true });   
+    this.setState({ showUpdateStatusOverlay: true });   
   }
 
   hidePopUp = () => {
-    this.setState({ show: false });  
-  }
-
-  onUpdateStateClick = () => {
-    this.hidePopUp();
-    this.showUpdateStateDialog();
-  };
-
-  showUpdateStateDialog = () => {
-    this.setState({
-      showUpdateStateDialog: true,
-    });
-  }
-
-  hideUpdateStateDialog = () => {
-    this.setState({
-      showUpdateStateDialog: false,
-    });
+    this.setState({ showUpdateStatusOverlay: false });  
   }
 
   render() {
@@ -119,21 +97,12 @@ class ScenarioTableRow extends React.PureComponent {
         <td onMouseOver={this.showPopUp} onMouseOut={this.hidePopUp}>
           <Label bsStyle={reviewedProps.bsStyle}>{reviewedProps.text}</Label>
         </td>
-        {isUpdateScenarioActive && <Overlay
-          show={this.state.show}
-          target={this}
-          placement="right">
-          <Popover id="popover-trigger-hover-focus" onMouseOver={this.showPopUp} onMouseOut={this.hidePopUp}>
-            <Button glyph="flag" onClick={this.onUpdateStateClick}>
-              Modifier le statut&hellip;
-            </Button>
-          </Popover>
-        </Overlay>}
-        <UpdateScenarioStateDialog
-          scenario={scenario}
-          show={this.state.showUpdateStateDialog}
-          onClose={this.hideUpdateStateDialog}
-          onUpdateState={this.onUpdateScenario} />
+        <UpdateScenarioStatusOverlay 
+          show={this.state.showUpdateStatusOverlay && isUpdateScenarioActive} 
+          placement="right"
+          target={this} 
+          scenario={scenario} 
+          onUpdateScenario={this.onUpdateScenario} />
       </tr>
     );
   }
